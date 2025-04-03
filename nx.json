@@ -3,6 +3,7 @@
   "targetDefaults": {
     "build": {
       "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
       "options": {
         "cwd": "{projectRoot}",
         "command": "tsc -b"
@@ -10,6 +11,7 @@
     },
     "lint": {
       "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
       "options": {
         "cwd": "{projectRoot}",
         "commands": ["oxlint", "prettier --check ."]
@@ -23,7 +25,7 @@
     },
     "test": {
       "executor": "nx:run-commands",
-      "dependsOn": ["^ts-build"],
+      "dependsOn": ["^build"],
       "options": {
         "cwd": "{projectRoot}",
         "command": "vitest run --passWithNoTests"
