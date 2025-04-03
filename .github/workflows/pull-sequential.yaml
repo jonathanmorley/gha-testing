@@ -1,0 +1,9 @@
+on: [pull_request, push]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: jdx/mise-action@v2
+      - run: pnpm install
+      - run: pnpm nx run-many -t build,lint,test

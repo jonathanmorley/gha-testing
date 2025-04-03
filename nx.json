@@ -1,0 +1,42 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "targetDefaults": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{projectRoot}",
+        "command": "tsc -b"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{projectRoot}",
+        "commands": ["oxlint", "prettier --check ."]
+      },
+      "configurations": {
+        "fix": {
+          "commands": ["oxlint --fix", "prettier --write ."],
+          "parallel": false
+        }
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["^ts-build"],
+      "options": {
+        "cwd": "{projectRoot}",
+        "command": "vitest run --passWithNoTests"
+      },
+      "configurations": {
+        "unit": {
+          "args": ["--dir=tests/unit"]
+        },
+        "integration": {
+          "args": ["--dir=tests/integration"]
+        }
+      },
+      "defaultConfiguration": "unit"
+    }
+  }
+}

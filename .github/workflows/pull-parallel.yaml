@@ -1,0 +1,26 @@
+on: [pull_request, push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: jdx/mise-action@v2
+      - run: pnpm install
+      - run: pnpm nx run-many -t build
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: jdx/mise-action@v2
+      - run: pnpm install
+      - run: pnpm nx run-many -t lint
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: jdx/mise-action@v2
+      - run: pnpm install
+      - run: pnpm nx run-many -t test
+  ci:
+    needs: [build, lint, test]
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'success'

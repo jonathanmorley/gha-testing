@@ -1,0 +1,11 @@
+{
+  "devDependencies": {
+    "@tsconfig/node22": "^22.0.1",
+    "@types/node": "^22.14.0",
+    "nx": "^20.7.1",
+    "oxlint": "^0.16.4",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.2",
+    "vitest": "^3.1.1"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "typescript-library",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "nx": {
+    "targets": {
+      "build": {},
+      "lint": {},
+      "test": {}
+    }
+  }
+}
