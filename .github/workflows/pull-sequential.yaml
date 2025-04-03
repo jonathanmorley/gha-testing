@@ -7,4 +7,5 @@ jobs:
       - uses: actions/checkout@v2
       - uses: jdx/mise-action@v2
       - run: pnpm install
-      - run: pnpm nx run-many -t build,lint,test:unit,test:integration
+      - run: pnpm nx run-many -t build,lint,test
+      - run: pnpm nx run-many -t test -c integration
