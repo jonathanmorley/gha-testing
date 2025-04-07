@@ -44,7 +44,7 @@ jobs:
 
             const defaultIncludes = defaultRunners.map(runner => ({
               runner,
-              targets = defaultTargets
+              targets: defaultTargets
             }));
             const customIncludes = Object.entries(targetConfigs)
               .filter(([_, includes]) => includes.length > 0)
