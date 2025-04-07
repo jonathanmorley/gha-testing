@@ -1,24 +1,24 @@
 on:
   workflow_call:
     inputs:
-      orchestrators:
+      package-manager:
         type: string
-        default: '["nx"]'
+        default: 'pnpm'
       runners:
         type: string
         default: '["ubuntu-latest"]'
       build:
         type: string
-        default: '{}'
+        default: '[]'
       lint:
         type: string
-        default: '{}'
+        default: '[]'
       unit-test:
         type: string
-        default: '{}'
+        default: '[]'
       integration-test:
         type: string
-        default: '{}'
+        default: '[]'
 jobs:
   plan:
     runs-on: ubuntu-latest
@@ -29,31 +29,38 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const runners = JSON.parse(core.getInput('runners'));
-            console.log(runners);
+            const defaultRunners = JSON.parse(core.getInput('runners'));
 
-            const build = JSON.parse(core.getInput('build'));
-            console.log(build);
+            const targetIncludes = {
+              build: JSON.parse(core.getInput('build')),
+              lint: JSON.parse(core.getInput('lint')),
+              'unit-test': JSON.parse(core.getInput('unit-test')),
+              'integration-test': JSON.parse(core.getInput('integration-test')),
+            };
 
-            const lint = JSON.parse(core.getInput('lint'));
-            console.log(lint);
+            const defaultTargets = Object.entries(targetConfigs)
+              .filter(([_, includes]) => includes.length === 0)
+              .map(([target]) => target);
 
-            const unitTest = JSON.parse(core.getInput('unit-test'));
-            console.log(unitTest);
+            const defaultIncludes = defaultRunners.map(runner => ({
+              runner,
+              targets = defaultTargets
+            }));
+            const customIncludes = Object.entries(targetConfigs)
+              .filter(([_, includes]) => includes.length > 0)
+              .map(([target, includes]) => ({
+                targets,
+                includes: includes.map(include => ({
+                  runner: include.runner,
+                  targets: [target]
+                }))
+              }));
+            const includes = [...defaultIncludes, ...customIncludes];
 
-            const integrationTest = JSON.parse(core.getInput('integration-test'));
-            console.log(integrationTest);
+            const plan = { matrix: { include: includes } };
+            console.log(plan);
 
-            const baseTargets = [];
-            if (Object.keys(build).length === 0) baseTargets.push('build');
-            if (Object.keys(lint).length === 0) baseTargets.push('lint');
-            if (Object.keys(unitTest).length === 0) baseTargets.push('unit-test');
-            if (Object.keys(integrationTest).length === 0) baseTargets.push('integration-test');
-
-            const baseIncludes = runners.map(runner => ({ runner, targets: baseTargets }));
-            console.log(baseIncludes);
-
-            return { matrix: { includes: baseIncludes } };
+            return plan;
         env:
           INPUT_RUNNERS: ${{ inputs.runners }}
           INPUT_BUILD: ${{ inputs.build }}
@@ -62,16 +69,15 @@ jobs:
           INPUT_INTEGRATION-TEST: ${{ inputs.integration-test }}
     outputs:
       plan: ${{ steps.plan.outputs.result }}
-  nx:
+  default:
     needs: [plan]
-    if: ${{ contains(fromJson(inputs.orchestrators), 'nx') }}
     strategy:
       matrix: ${{ fromJson(needs.plan.outputs.plan).matrix }}
-    runs-on: ${{ matrix.includes.runner }}
+    runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v2
       - uses: jdx/mise-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: pnpm install
-      - run: pnpm nx run-many -t ${{ join(matrix.includes.targets) }}
+      - run: pnpm run nx affected --target=${{ join(fromJson(needs.plan.outputs.plan).targets) }} ${{ join(fromJson(needs.plan.outputs.plan).args) }}
