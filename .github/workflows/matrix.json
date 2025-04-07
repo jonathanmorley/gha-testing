@@ -2,10 +2,18 @@
   "shards": [
     {
       "runners": ["ubuntu-latest"],
-      "targets": ["build", "lint", "unit-test", "integration-test"],
+      "targets": ["build", "lint", "integration-test"],
       "extras": {
         "integration-test": ["aws"]
       }
+    },
+    {
+      "runners": ["ubuntu-latest"],
+      "targets": ["unit-test"]
+    },
+    {
+      "runners": ["ubuntu-latest"],
+      "targets": ["unit-test"]
     }
   ]
 }

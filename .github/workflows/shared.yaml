@@ -1,15 +1,26 @@
 on:
   workflow_call:
-
 jobs:
   plan:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Create manifest
-        run: echo 'create manifest'
-  ci:
+        id: plan
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const matrix = JSON.parse(fs.readFileSync('.github/workflows/matrix.json', 'utf8'));
+            const runners = [...new Set(matrix.shards.flatMap(shard => shard.runners))];
+            const targets = matrix.shards.map(shard => shard.targets);
+            return { runners, targets };
+    outputs:
+      matrix: ${{ steps.plan.outputs.result }}
+  fan-out:
     needs: [plan]
     runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJson(needs.plan.outputs.matrix) }}
     steps:
       - run: echo 'success'
