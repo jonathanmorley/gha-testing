@@ -26,17 +26,20 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const inputs = JSON.parse(process.env.INPUTS);
-            const runners = JSON.parse(inputs.runners);
-            const build = JSON.parse(inputs.build);
-            const lint = JSON.parse(inputs.lint);
-            const unitTest = JSON.parse(inputs['unit-test']);
-            const integrationTest = JSON.parse(inputs['integration-test']);
+            const runners = JSON.parse(core.getInput('runners'));
+            const build = JSON.parse(core.getInput('build'));
+            const lint = JSON.parse(core.getInput('lint'));
+            const unitTest = JSON.parse(core.getInput('unit-test'));
+            const integrationTest = JSON.parse(core.getInput('integration-test'));
 
             console.log(runners, build, lint, unitTest, integrationTest);
             console.log(process.env);
         env:
-          INPUTS: ${{ toJson(inputs) }}
+          INPUT_RUNNERS: ${{ inputs.runners }}
+          INPUT_BUILD: ${{ inputs.build }}
+          INPUT_LINT: ${{ inputs.lint }}
+          INPUT_UNIT_TEST: ${{ inputs.unit-test }}
+          INPUT_INTEGRATION_TEST: ${{ inputs.integration-test }}
     outputs:
       plan: ${{ steps.plan.outputs.result }}
   shards:
