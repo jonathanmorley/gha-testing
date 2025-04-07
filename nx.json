@@ -28,7 +28,7 @@
       "dependsOn": ["^build"],
       "options": {
         "cwd": "{projectRoot}",
-        "command": "vitest run --passWithNoTests"
+        "command": "vitest"
       },
       "configurations": {
         "unit": {

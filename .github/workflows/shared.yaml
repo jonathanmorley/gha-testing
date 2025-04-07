@@ -40,6 +40,16 @@ jobs:
 
             const integrationTest = JSON.parse(core.getInput('integration-test'));
             console.log(integrationTest);
+
+            const baseTargets = [];
+            if (Object.keys(build).length === 0) baseTargets.push('build');
+            if (Object.keys(lint).length === 0) baseTargets.push('lint');
+            if (Object.keys(unitTest).length === 0) baseTargets.push('unit-test');
+            if (Object.keys(integrationTest).length === 0) baseTargets.push('integration-test');
+
+            const baseIncludes = runners.map(runner => { runner, targets: baseTargets }));
+
+            return { includes: baseIncludes };
         env:
           INPUT_RUNNERS: ${{ inputs.runners }}
           INPUT_BUILD: ${{ inputs.build }}

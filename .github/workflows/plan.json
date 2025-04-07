@@ -1,9 +1,0 @@
-{
-  "core": {
-    "runners": ["ubuntu-latest", "macos-latest"],
-    "targets": ["build", "lint", "integration-test"]
-  },
-  "shards": {
-    "unit-test": 3
-  }
-}
