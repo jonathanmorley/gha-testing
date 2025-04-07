@@ -12,15 +12,15 @@ jobs:
           script: |
             const fs = require('fs');
             const matrix = JSON.parse(fs.readFileSync('.github/workflows/matrix.json', 'utf8'));
-            const runners = [...new Set(matrix.shards.flatMap(shard => shard.runners))];
-            const targets = matrix.shards.map(shard => shard.targets);
-            return { runners, targets };
+            const includes = matrix.shards.flatMap(shard => shard.runners.map(runner => ({ runner, ...shard })));
+            console.log(includes);
+            return { matrix: { includes } };
     outputs:
-      matrix: ${{ steps.plan.outputs.result }}
+      plan: ${{ steps.plan.outputs.result }}
   fan-out:
     needs: [plan]
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{ fromJson(needs.plan.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.plan.outputs.plan).matrix }}
     steps:
       - run: echo 'success'
