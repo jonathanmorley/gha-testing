@@ -1,6 +1,9 @@
 on:
   workflow_call:
     inputs:
+      orchestrators:
+        type: string
+        default: '["nx"]'
       runners:
         type: string
         default: '["ubuntu-latest"]'
@@ -59,8 +62,9 @@ jobs:
           INPUT_INTEGRATION-TEST: ${{ inputs.integration-test }}
     outputs:
       plan: ${{ steps.plan.outputs.result }}
-  shards:
+  nx:
     needs: [plan]
+    if: ${{ contains(fromJson(inputs.orchestrators), 'nx') }}
     strategy:
       matrix: ${{ fromJson(needs.plan.outputs.plan).matrix }}
     runs-on: ${{ matrix.includes.runner }}
