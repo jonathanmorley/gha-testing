@@ -38,7 +38,7 @@ jobs:
               'integration-test': JSON.parse(core.getInput('integration-test')),
             };
 
-            const defaultTargets = Object.entries(targetConfigs)
+            const defaultTargets = Object.entries(targetIncludes)
               .filter(([_, includes]) => includes.length === 0)
               .map(([target]) => target);
 
@@ -46,7 +46,7 @@ jobs:
               runner,
               targets: defaultTargets
             }));
-            const customIncludes = Object.entries(targetConfigs)
+            const customIncludes = Object.entries(targetIncludes)
               .filter(([_, includes]) => includes.length > 0)
               .map(([target, includes]) => ({
                 targets,
