@@ -28,6 +28,7 @@ jobs:
           script: |
             const inputs = context;
             console.log(inputs);
+            console.log(process.env);
     outputs:
       plan: ${{ steps.plan.outputs.result }}
   shards:
