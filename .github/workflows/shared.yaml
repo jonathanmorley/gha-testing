@@ -77,4 +77,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: pnpm install
-      - run: pnpm run nx affected --target=${{ join(fromJson(needs.plan.outputs.plan).targets) }} ${{ join(fromJson(needs.plan.outputs.plan).args) }}
+      - run: pnpm nx affected --target=${{ join(fromJson(needs.plan.outputs.plan).targets) }} ${{ join(fromJson(needs.plan.outputs.plan).args) }}
