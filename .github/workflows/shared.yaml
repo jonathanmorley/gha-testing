@@ -24,7 +24,7 @@ jobs:
     needs: [plan]
     strategy:
       matrix: ${{ fromJson(needs.plan.outputs.plan).matrix }}
-    runs-on: ${{ matrix.runner }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: jdx/mise-action@v2
