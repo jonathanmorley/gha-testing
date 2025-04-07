@@ -27,13 +27,19 @@ jobs:
         with:
           script: |
             const runners = JSON.parse(core.getInput('runners'));
-            const build = JSON.parse(core.getInput('build'));
-            const lint = JSON.parse(core.getInput('lint'));
-            const unitTest = JSON.parse(core.getInput('unit-test'));
-            const integrationTest = JSON.parse(core.getInput('integration-test'));
+            console.log(runners);
 
-            console.log(runners, build, lint, unitTest, integrationTest);
-            console.log(process.env);
+            const build = JSON.parse(core.getInput('build'));
+            console.log(build);
+
+            const lint = JSON.parse(core.getInput('lint'));
+            console.log(lint);
+
+            const unitTest = JSON.parse(core.getInput('unit-test'));
+            console.log(unitTest);
+
+            const integrationTest = JSON.parse(core.getInput('integration-test'));
+            console.log(integrationTest);
         env:
           INPUT_RUNNERS: ${{ inputs.runners }}
           INPUT_BUILD: ${{ inputs.build }}
