@@ -44,8 +44,8 @@ jobs:
           INPUT_RUNNERS: ${{ inputs.runners }}
           INPUT_BUILD: ${{ inputs.build }}
           INPUT_LINT: ${{ inputs.lint }}
-          INPUT_UNIT_TEST: ${{ inputs.unit-test }}
-          INPUT_INTEGRATION_TEST: ${{ inputs.integration-test }}
+          INPUT_UNIT-TEST: ${{ inputs.unit-test }}
+          INPUT_INTEGRATION-TEST: ${{ inputs.integration-test }}
     outputs:
       plan: ${{ steps.plan.outputs.result }}
   shards:
