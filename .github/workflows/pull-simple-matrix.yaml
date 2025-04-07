@@ -1,18 +1,5 @@
 on: [pull_request, push]
 
 jobs:
-  verify:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        job: [build, lint, unit-test, integration-test]
-    steps:
-      - uses: actions/checkout@v2
-      - uses: jdx/mise-action@v2
-      - run: pnpm install
-      - run: pnpm nx run-many -t ${{ matrix.job }}
   ci:
-    needs: [verify]
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo 'success'
+    uses: ./.github/workflows/shared.yaml

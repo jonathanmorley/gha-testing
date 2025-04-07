@@ -1,0 +1,15 @@
+on:
+  workflow_call:
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Create manifest
+        run: echo 'create manifest'
+  ci:
+    needs: [plan]
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'success'
