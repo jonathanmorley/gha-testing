@@ -28,16 +28,6 @@ jobs:
           script: |
             const inputs = context;
             console.log(inputs);
-            
-            
-            # const includes = matrix.shards.flatMap(shard => shard.runners.map(runner => {
-            #   delete shard.runners;
-            #   return { runner, ...shard };
-            # }));
-            # for (const include of includes) {
-            #   }
-
-            return { includes: undefined };
     outputs:
       plan: ${{ steps.plan.outputs.result }}
   shards:
