@@ -24,10 +24,9 @@ jobs:
     needs: [plan]
     strategy:
       matrix: ${{ fromJson(needs.plan.outputs.plan).matrix }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.includes.runner }}
     steps:
-      - run: echo "Running on ${{ toJson(matrix) }}"
       - uses: actions/checkout@v2
       - uses: jdx/mise-action@v2
       - run: pnpm install
-      - run: pnpm nx run-many -t ${{ join(matrix.targets) }}
+      - run: pnpm nx run-many -t ${{ join(matrix.include.targets) }}
