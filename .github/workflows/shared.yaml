@@ -55,7 +55,7 @@ jobs:
             const includes = [...defaultIncludes, ...customIncludes];
 
             const plan = { matrix: { include: includes } };
-            console.log(plan);
+            console.log(JSON.stringify(plan, undefined, 2));
 
             return plan;
         env:
