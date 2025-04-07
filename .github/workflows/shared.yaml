@@ -28,5 +28,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: jdx/mise-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: pnpm install
-      - run: pnpm nx run-many -t ${{ join(matrix.include.targets) }}
+      - run: pnpm nx run-many -t ${{ join(matrix.includes.targets) }}
