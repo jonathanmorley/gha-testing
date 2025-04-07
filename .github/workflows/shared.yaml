@@ -2,20 +2,20 @@ on:
   workflow_call:
     inputs:
       runners:
-        required: true
         type: string
+        default: '["ubuntu-latest"]'
       build:
-        required: false
         type: string
+        default: '{}'
       lint:
-        required: false
         type: string
+        default: '{}'
       unit-test:
-        required: false
         type: string
+        default: '{}'
       integration-test:
-        required: false
         type: string
+        default: '{}'
 jobs:
   plan:
     runs-on: ubuntu-latest
@@ -29,7 +29,7 @@ jobs:
             const runners = JSON.parse(core.getInput('runners'));
             console.log(runners);
 
-            const build = JSON.parse(core.getInput('build') ?? '{}');
+            const build = JSON.parse(core.getInput('build'));
             console.log(build);
 
             const lint = JSON.parse(core.getInput('lint'));
