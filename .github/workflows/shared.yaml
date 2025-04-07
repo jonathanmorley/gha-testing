@@ -26,6 +26,7 @@ jobs:
       matrix: ${{ fromJson(needs.plan.outputs.plan).matrix }}
     runs-on: ubuntu-latest
     steps:
+      - run: echo "Running on ${{ matrix.runner }}"
       - uses: actions/checkout@v2
       - uses: jdx/mise-action@v2
       - run: pnpm install
