@@ -48,13 +48,10 @@ jobs:
             }));
             const customIncludes = Object.entries(targetIncludes)
               .filter(([_, includes]) => includes.length > 0)
-              .map(([target, includes]) => ({
-                targets,
-                includes: includes.map(include => ({
-                  runner: include.runner,
-                  targets: [target]
-                }))
-              }));
+              .flatMap(([target, includes]) => includes.map(include => ({
+                ...include,
+                targets: [target]
+              })));
             const includes = [...defaultIncludes, ...customIncludes];
 
             const plan = { matrix: { include: includes } };
