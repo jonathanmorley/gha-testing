@@ -47,7 +47,8 @@ jobs:
             if (Object.keys(unitTest).length === 0) baseTargets.push('unit-test');
             if (Object.keys(integrationTest).length === 0) baseTargets.push('integration-test');
 
-            const baseIncludes = runners.map(runner => { runner, targets: baseTargets }));
+            const baseIncludes = runners.map(runner => ({ runner, targets: baseTargets }));
+            console.log(baseIncludes);
 
             return { includes: baseIncludes };
         env:
