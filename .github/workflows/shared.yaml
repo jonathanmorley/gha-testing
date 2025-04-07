@@ -22,8 +22,11 @@ jobs:
       plan: ${{ steps.plan.outputs.result }}
   fan-out:
     needs: [plan]
-    runs-on: ubuntu-latest
     strategy:
       matrix: ${{ fromJson(needs.plan.outputs.plan).matrix }}
+    runs-on: ${{ matrix.runner }}
     steps:
-      - run: echo 'success'
+      - uses: actions/checkout@v2
+      - uses: jdx/mise-action@v2
+      - run: pnpm install
+      - run: pnpm nx run-many -t ${{ join(matrix.targets) }}
