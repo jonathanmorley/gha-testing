@@ -50,7 +50,7 @@ jobs:
             const baseIncludes = runners.map(runner => ({ runner, targets: baseTargets }));
             console.log(baseIncludes);
 
-            return { includes: baseIncludes };
+            return { matrix: { includes: baseIncludes } };
         env:
           INPUT_RUNNERS: ${{ inputs.runners }}
           INPUT_BUILD: ${{ inputs.build }}
@@ -62,7 +62,7 @@ jobs:
   shards:
     needs: [plan]
     strategy:
-      matrix: ${{ fromJson(needs.plan.outputs.plan).includes }}
+      matrix: ${{ fromJson(needs.plan.outputs.plan).matrix }}
     runs-on: ${{ matrix.includes.runner }}
     steps:
       - uses: actions/checkout@v2
