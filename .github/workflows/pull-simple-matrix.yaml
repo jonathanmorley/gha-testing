@@ -3,3 +3,6 @@ on: [pull_request, push]
 jobs:
   ci:
     uses: ./.github/workflows/shared.yaml
+    with:
+      runners: '["ubuntu-latest", "macos-latest"]'
+      unit-test: '{ "shards": 2 }'
