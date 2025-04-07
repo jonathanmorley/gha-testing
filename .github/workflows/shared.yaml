@@ -12,7 +12,10 @@ jobs:
           script: |
             const fs = require('fs');
             const matrix = JSON.parse(fs.readFileSync('.github/workflows/matrix.json', 'utf8'));
-            const includes = matrix.shards.flatMap(shard => shard.runners.map(runner => ({ runner, ...shard })));
+            const includes = matrix.shards.flatMap(shard => shard.runners.map(runner => {
+              delete shard.runners;
+              return { runner, ...shard };
+            }));
             console.log(includes);
             return { matrix: { includes } };
     outputs:
