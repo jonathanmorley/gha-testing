@@ -8,8 +8,8 @@ jobs:
       # Uncomment to create some separate sharded jobs for unit testing
       #unit-test: '[{ "runner": "ubuntu-latest", "args": "-- --shard=1/2" }, { "runner": "ubuntu-latest", "args": "-- --shard=2/2" }]'
       # Uncomment to force complete parallelization
-      fmt: '[{ "runner": "ubuntu-latest" }]'
-      build: '[{ "runner": "ubuntu-latest" }]'
-      lint: '[{ "runner": "ubuntu-latest" }]'
-      unit-test: '[{ "runner": "ubuntu-latest" }]'
-      integration-test: '[{ "runner": "ubuntu-latest" }]'
+      # fmt: '[{ "runner": "ubuntu-latest" }]'
+      # build: '[{ "runner": "ubuntu-latest" }]'
+      # lint: '[{ "runner": "ubuntu-latest" }]'
+      # unit-test: '[{ "runner": "ubuntu-latest" }]'
+      # integration-test: '[{ "runner": "ubuntu-latest" }]'
