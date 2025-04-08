@@ -1,0 +1,15 @@
+{
+  "excludes": [
+    "pnpm-lock.yaml",
+    "**/CHANGELOG.md"
+  ],
+  "plugins": [
+    "https://plugins.dprint.dev/prettier-0.57.0.json@1bc6b449e982d5b91a25a7c59894102d40c5748651a08a095fb3926e64d55a31"
+  ],
+  "lineWidth": 120,
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "none",
+    "arrowParens": "avoid"
+  }
+}

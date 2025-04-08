@@ -1,12 +1,12 @@
 on:
   workflow_call:
     inputs:
-      package-manager:
-        type: string
-        default: 'pnpm'
       runners:
         type: string
         default: '["ubuntu-latest"]'
+      fmt:
+        type: string
+        default: '[]'
       build:
         type: string
         default: '[]'
@@ -32,6 +32,7 @@ jobs:
             const defaultRunners = JSON.parse(core.getInput('runners'));
 
             const targetIncludes = {
+              fmt: JSON.parse(core.getInput('fmt')),
               build: JSON.parse(core.getInput('build')),
               lint: JSON.parse(core.getInput('lint')),
               'unit-test': JSON.parse(core.getInput('unit-test')),
@@ -60,6 +61,7 @@ jobs:
             return plan;
         env:
           INPUT_RUNNERS: ${{ inputs.runners }}
+          INPUT_FMT: ${{ inputs.fmt }}
           INPUT_BUILD: ${{ inputs.build }}
           INPUT_LINT: ${{ inputs.lint }}
           INPUT_UNIT-TEST: ${{ inputs.unit-test }}
