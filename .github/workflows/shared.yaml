@@ -43,10 +43,13 @@ jobs:
               .filter(([_, includes]) => includes.length === 0)
               .map(([target]) => target);
 
-            const defaultIncludes = defaultRunners.map(runner => ({
-              runner,
-              targets: defaultTargets
-            }));
+            const defaultIncludes = defaultTargets.length > 0
+              : defaultRunners.map(runner => ({
+                runner,
+                targets: defaultTargets
+              }))
+              ? [];
+
             const customIncludes = Object.entries(targetIncludes)
               .filter(([_, includes]) => includes.length > 0)
               .flatMap(([target, includes]) => includes.map(include => ({
