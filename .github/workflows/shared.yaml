@@ -68,7 +68,7 @@ jobs:
           INPUT_INTEGRATION-TEST: ${{ inputs.integration-test }}
     outputs:
       plan: ${{ steps.plan.outputs.result }}
-  default:
+  fan-out:
     needs: [plan]
     strategy:
       matrix: ${{ fromJson(needs.plan.outputs.plan).matrix }}
