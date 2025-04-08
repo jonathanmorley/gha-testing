@@ -9,6 +9,8 @@
     "targets": {
       "build": {},
       "lint": {},
+      "unit-test": {},
+      "integration-test": {},
       "test": {}
     }
   }

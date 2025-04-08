@@ -23,22 +23,26 @@
         }
       }
     },
-    "test": {
+    "unit-test": {
       "executor": "nx:run-commands",
       "dependsOn": ["^build"],
       "options": {
         "cwd": "{projectRoot}",
-        "command": "vitest"
-      },
-      "configurations": {
-        "unit": {
-          "args": ["--dir=tests/unit"]
-        },
-        "integration": {
-          "args": ["--dir=tests/integration"]
-        }
-      },
-      "defaultConfiguration": "unit"
+        "command": "vitest",
+        "args": ["--dir=tests/unit"]
+      }
+    },
+    "integration-test": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "cwd": "{projectRoot}",
+        "command": "vitest",
+        "args": ["--dir=tests/integration"]
+      }
+    },
+    "test": {
+      "dependsOn": ["unit-test"]
     }
   }
 }

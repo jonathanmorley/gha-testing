@@ -71,6 +71,7 @@ jobs:
     strategy:
       matrix: ${{ fromJson(needs.plan.outputs.plan).matrix }}
     runs-on: ${{ matrix.runner }}
+    name: ${{ join(matrix.targets) }} ${{ matrix.args }} on ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v2
       - uses: jdx/mise-action@v2
