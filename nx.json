@@ -1,9 +1,15 @@
 {
-  "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "targetDefaults": {
     "build": {
       "executor": "nx:run-commands",
       "dependsOn": ["^build"],
+      "inputs": [
+        "root",
+        "{projectRoot}/package.json",
+        "{projectRoot}/src/**/*.ts",
+        "{projectRoot}/tsconfig.json",
+        "{workspaceRoot}/tsconfig.json"
+      ],
       "options": {
         "cwd": "{projectRoot}",
         "command": "tsc -b"
@@ -12,6 +18,14 @@
     "lint": {
       "executor": "nx:run-commands",
       "dependsOn": ["^build"],
+      "inputs": [
+        "root",
+        "{projectRoot}/.oxlintrc.json",
+        "{projectRoot}/package.json",
+        "{projectRoot}/src/**/*.ts",
+        "{projectRoot}/tests/**/*.ts",
+        "{workspaceRoot}/.oxlintrc.json"
+      ],
       "options": {
         "cwd": "{projectRoot}",
         "commands": ["oxlint", "prettier --check ."]
@@ -26,6 +40,14 @@
     "unit-test": {
       "executor": "nx:run-commands",
       "dependsOn": ["^build"],
+      "inputs": [
+        "root",
+        "{projectRoot}/.oxlintrc.json",
+        "{projectRoot}/package.json",
+        "{projectRoot}/src/**/*.ts",
+        "{projectRoot}/tests/**/*.ts",
+        "{workspaceRoot}/.oxlintrc.json"
+      ],
       "options": {
         "cwd": "{projectRoot}",
         "command": "vitest",
@@ -35,6 +57,14 @@
     "integration-test": {
       "executor": "nx:run-commands",
       "dependsOn": ["build"],
+      "inputs": [
+        "root",
+        "{projectRoot}/.oxlintrc.json",
+        "{projectRoot}/package.json",
+        "{projectRoot}/src/**/*.ts",
+        "{projectRoot}/tests/**/*.ts",
+        "{workspaceRoot}/.oxlintrc.json"
+      ],
       "options": {
         "cwd": "{projectRoot}",
         "command": "vitest",
@@ -44,5 +74,11 @@
     "test": {
       "dependsOn": ["unit-test"]
     }
+  },
+  "namedInputs": {
+    "root": [
+      "{workspaceRoot}/.github/workflows/*",
+      "{workspaceRoot}/mise.toml"
+    ]
   }
 }
