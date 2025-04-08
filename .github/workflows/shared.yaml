@@ -24,7 +24,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: nrwl/nx-set-shas@v4
       - name: Create manifest
         id: plan
         uses: actions/github-script@v7
@@ -82,4 +81,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: pnpm install
+      - uses: nrwl/nx-set-shas@v4
       - run: pnpm nx affected --target=${{ join(matrix.targets) }} ${{ matrix.args }}
