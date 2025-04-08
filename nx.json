@@ -28,11 +28,11 @@
       ],
       "options": {
         "cwd": "{projectRoot}",
-        "commands": ["oxlint", "prettier --check ."]
+        "commands": ["oxlint"]
       },
       "configurations": {
         "fix": {
-          "commands": ["oxlint --fix", "prettier --write ."],
+          "commands": ["oxlint --fix"],
           "parallel": false
         }
       }
