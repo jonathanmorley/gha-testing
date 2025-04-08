@@ -13,7 +13,9 @@
     "targets": {
       "fmt": {
         "executor": "nx:run-commands",
-        "inputs": ["{workspaceRoot}/**/*"],
+        "inputs": [
+          "{workspaceRoot}/**/*"
+        ],
         "options": {
           "cwd": "{workspaceRoot}",
           "command": "dprint check"

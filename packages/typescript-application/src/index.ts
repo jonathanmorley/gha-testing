@@ -1,3 +1,3 @@
-import { hello } from "typescript-library";
+import { hello } from 'typescript-library';
 
-console.log(hello("World"));
+console.log(hello('World'));

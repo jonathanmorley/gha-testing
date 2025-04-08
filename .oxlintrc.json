@@ -5,13 +5,5 @@
     "suspicious": "error",
     "perf": "warn"
   },
-  "plugins": [
-    "typescript",
-    "unicorn",
-    "oxc",
-    "import",
-    "node",
-    "promise",
-    "vitest"
-  ]
+  "plugins": ["typescript", "unicorn", "oxc", "import", "node", "promise", "vitest"]
 }

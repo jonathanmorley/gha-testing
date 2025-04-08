@@ -76,9 +76,6 @@
     }
   },
   "namedInputs": {
-    "root": [
-      "{workspaceRoot}/.github/workflows/*",
-      "{workspaceRoot}/mise.toml"
-    ]
+    "root": ["{workspaceRoot}/.github/workflows/*", "{workspaceRoot}/mise.toml"]
   }
 }
