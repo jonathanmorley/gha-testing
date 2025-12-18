@@ -1,13 +1,13 @@
 {
   "name": "gha-testing",
   "devDependencies": {
-    "@tsconfig/node22": "^22.0.1",
-    "@types/node": "^24.0.0",
-    "dprint": "^0.50.0",
-    "nx": "^22.0.0",
-    "oxlint": "^1.0.0",
-    "typescript": "^5.8.2",
-    "vitest": "^4.0.0"
+    "@tsconfig/node22": "22.0.1",
+    "@types/node": "24.10.4",
+    "dprint": "0.50.2",
+    "nx": "22.3.1",
+    "oxlint": "1.33.0",
+    "typescript": "5.8.2",
+    "vitest": "4.0.16"
   },
   "nx": {
     "targets": {
