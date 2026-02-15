@@ -5,7 +5,7 @@
     "@types/node": "24.10.11",
     "dprint": "0.51.1",
     "nx": "22.3.1",
-    "oxlint": "1.46.0",
+    "oxlint": "1.47.0",
     "typescript": "5.9.3",
     "vitest": "4.0.18"
   },
