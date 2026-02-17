@@ -1,7 +1,7 @@
 {
   "name": "gha-testing",
   "devDependencies": {
-    "@tsconfig/node22": "22.0.5",
+    "@tsconfig/node24": "24.0.0",
     "@types/node": "24.10.11",
     "dprint": "0.51.1",
     "nx": "22.3.1",
