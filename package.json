@@ -7,7 +7,7 @@
     "nx": "22.3.3",
     "oxlint": "1.72.0",
     "typescript": "5.9.3",
-    "vitest": "4.1.9"
+    "vitest": "4.1.10"
   },
   "nx": {
     "targets": {
