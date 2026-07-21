@@ -6,7 +6,7 @@
     "dprint": "0.51.1",
     "nx": "22.3.3",
     "oxlint": "1.74.0",
-    "typescript": "5.9.3",
+    "typescript": "7.0.2",
     "vitest": "4.1.10"
   },
   "nx": {
