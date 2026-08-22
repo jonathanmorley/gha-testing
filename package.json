@@ -4,7 +4,7 @@
     "@tsconfig/node22": "22.0.6",
     "@types/node": "26.2.0",
     "dprint": "0.51.1",
-    "nx": "22.7.8",
+    "nx": "23.1.1",
     "oxlint": "1.79.0",
     "typescript": "5.9.3",
     "vitest": "4.1.11"
