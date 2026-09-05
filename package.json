@@ -3,7 +3,7 @@
   "devDependencies": {
     "@tsconfig/node22": "22.0.6",
     "@types/node": "26.4.1",
-    "dprint": "0.51.1",
+    "dprint": "0.57.0",
     "nx": "22.7.9",
     "oxlint": "1.81.0",
     "typescript": "5.9.3",
