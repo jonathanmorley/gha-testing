@@ -51,7 +51,7 @@
       "options": {
         "cwd": "{projectRoot}",
         "command": "vitest",
-        "args": ["--dir=tests/unit"]
+        "args": ["--dir=tests/unit", "--passWithNoTests"]
       }
     },
     "integration-test": {
@@ -68,7 +68,7 @@
       "options": {
         "cwd": "{projectRoot}",
         "command": "vitest",
-        "args": ["--dir=tests/integration"]
+        "args": ["--dir=tests/integration", "--passWithNoTests"]
       }
     },
     "test": {

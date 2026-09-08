@@ -1,7 +1,9 @@
+import { execFileSync } from 'node:child_process';
+import { resolve } from 'node:path';
 import { it } from 'vitest';
-import { setTimeout } from 'node:timers/promises';
 
-it('should wait for 10 seconds', { timeout: 15_000 }, async ({ expect }) => {
-  await setTimeout(10_000);
-  expect(true).toBe(true);
+it('should print hello world', ({ expect }) => {
+  const entrypoint = resolve('dist/src/index.js');
+  const output = execFileSync(process.execPath, [entrypoint], { encoding: 'utf8' });
+  expect(output.trim()).toBe('Hello World!');
 });
