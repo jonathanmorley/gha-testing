@@ -34,7 +34,11 @@ export function token(): string {
 
 export function sanitize(message: string): string {
   const secret = currentToken();
-  return secret ? message.split(secret).join('***') : message;
+  if (!secret) return message;
+  // Redact both the raw token (REST/Bearer usage) and its Basic form
+  // (git smart-HTTP usage, which embeds base64 in argv).
+  const basic = Buffer.from(`x-access-token:${secret}`, 'utf8').toString('base64');
+  return message.split(secret).join('***').split(basic).join('***');
 }
 
 export function run(command: string, args: string[], cwd: string, timeout = 120_000): string {
@@ -47,6 +51,14 @@ export function run(command: string, args: string[], cwd: string, timeout = 120_
 
 export function gh(args: string[], cwd: string, timeout = 60_000): string {
   return run('gh', args, cwd, timeout);
+}
+
+// Git smart-HTTP rejects Bearer credentials ("invalid credentials") and
+// wants Basic with x-access-token as the username. The REST API used by
+// `gh` and fetch accepts Bearer; only git needs this form.
+export function gitAuthArgs(pat: string): string[] {
+  const basic = Buffer.from(`x-access-token:${pat}`, 'utf8').toString('base64');
+  return ['-c', `http.extraHeader=AUTHORIZATION: basic ${basic}`];
 }
 
 export function tempDir(prefix: string): string {

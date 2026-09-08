@@ -10,6 +10,7 @@ import {
   TESTBED,
   deletePackageVersion,
   gh,
+  gitAuthArgs,
   info,
   poll,
   remove,
@@ -77,7 +78,7 @@ function testbedUrl(): string {
 }
 
 function pushTree(stage: string, branch: string, tag: string, pat: string): void {
-  const auth = ['-c', `http.extraHeader=AUTHORIZATION: bearer ${pat}`];
+  const auth = gitAuthArgs(pat);
   run('git', [...auth, 'push', testbedUrl(), `main:${branch}`], stage);
   run('git', [...auth, 'tag', tag], stage);
   run('git', [...auth, 'push', testbedUrl(), tag], stage);
@@ -154,14 +155,7 @@ async function cleanup(
   try {
     const refs = run(
       'git',
-      [
-        '-c',
-        `http.extraHeader=AUTHORIZATION: bearer ${pat}`,
-        'ls-remote',
-        testbedUrl(),
-        `refs/heads/${namespace}/*`,
-        `refs/tags/${namespace}/*`
-      ],
+      [...gitAuthArgs(pat), 'ls-remote', testbedUrl(), `refs/heads/${namespace}/*`, `refs/tags/${namespace}/*`],
       workspaceRoot
     );
     if (refs.trim() !== '') {
