@@ -43,6 +43,10 @@ git push origin main '@jonathanmorley/typescript-library@*'
 
 Validate without mutating anything via `workflow_dispatch` with `dry_run: true` on an existing tag.
 
+## Live E2E authentication
+
+`e2e-release.yaml` (dispatch + weekly schedule, never on PRs) runs the `release-e2e` suite, which releases from namespaced `it-*` refs in the `gh-testbed` repo, publishes `0.0.0-e2e.*` package versions, and deletes everything afterwards. Authentication uses Octo STS, not a stored PAT: the job mints a short-lived token scoped to the testbed repo (trust policy at `gh-testbed/.github/chainguard/gha-testing-e2e.sts.yaml`, same pattern as `fork-maintainer`'s E2E). Local runs need `GH_TOKEN` with classic `repo`, `write:packages`, and `delete:packages` scopes instead, since there is no OIDC outside Actions.
+
 ## Pull requests
 
 - Keep PRs small and focused on a single concern.
