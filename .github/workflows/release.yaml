@@ -6,8 +6,10 @@ name: release
 # exists for validation runs and the live E2E in #179.
 on:
   push:
+    # ** spans / so namespaced live-E2E tags (it-<ns>/<project>@<version>)
+    # trigger as well as bare <project>@<version> tags.
     tags:
-      - '*@*'
+      - '**@**'
   workflow_dispatch:
     inputs:
       tag:
