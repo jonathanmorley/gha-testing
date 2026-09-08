@@ -6,10 +6,11 @@ Bazel counterpart: [jonathanmorley/bazel-example](https://github.com/jonathanmor
 
 ## Packages
 
-| Package                           | Description                                             |
-| --------------------------------- | ------------------------------------------------------- |
-| `packages/typescript-library`     | Publishable `hello()` library. See its README.          |
-| `packages/typescript-application` | Runnable app printing `hello('World')`. See its README. |
+| Package                           | Description                                                     |
+| --------------------------------- | --------------------------------------------------------------- |
+| `packages/typescript-library`     | Publishable `hello()` library. See its README.                  |
+| `packages/typescript-application` | Runnable app printing `hello('World')`. See its README.         |
+| `packages/release-smoke`          | Hermetic release smoke tests (never published). See its README. |
 
 ## Prerequisites
 
@@ -48,7 +49,7 @@ Version with `nx release` locally (independent versions, `{projectName}@{version
 
 1. [#176](https://github.com/jonathanmorley/gha-testing/issues/176) Repo hygiene (done).
 2. [#177](https://github.com/jonathanmorley/gha-testing/issues/177) Release pipeline (done — this slice).
-3. [#178](https://github.com/jonathanmorley/gha-testing/issues/178) Hermetic release smoke tests (no network).
+3. [#178](https://github.com/jonathanmorley/gha-testing/issues/178) Hermetic release smoke tests (done — `packages/release-smoke`).
 4. [#179](https://github.com/jonathanmorley/gha-testing/issues/179) Live GitHub E2E targeting `jonathanmorley/gh-testbed` namespaces (private churn-friendly repo with `alloc` + tag-ref mutex helpers and nightly `it-*` cleanup).
 5. [#180](https://github.com/jonathanmorley/gha-testing/issues/180) Polyglot proof (Python + Rust) and Nx-vs-Bazel writeup.
 
