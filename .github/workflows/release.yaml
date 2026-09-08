@@ -1,0 +1,118 @@
+name: release
+
+# Closed-ecosystem release: version with `nx release` locally, push the
+# resulting tags, and this workflow publishes to GitHub Packages plus a
+# GitHub Release with SBOM and SLSA attestation. `workflow_dispatch`
+# exists for validation runs and the live E2E in #179.
+on:
+  push:
+    tags:
+      - '*@*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing release tag, e.g. @jonathanmorley/typescript-library@1.0.1'
+        required: true
+        type: string
+      dry_run:
+        description: 'Validate only: build, pack, and dry-run publish without mutating anything'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+  packages: write
+  id-token: write
+  attestations: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
+      - name: Resolve tag
+        id: resolve
+        env:
+          INPUT_TAG: ${{ inputs.tag }}
+        run: |
+          if [ '${{ github.event_name }}' = 'workflow_dispatch' ]; then
+            TAG="$INPUT_TAG"
+          else
+            TAG="$GITHUB_REF_NAME"
+          fi
+          case "$TAG" in
+            *@*) ;;
+            *)
+              echo "Tag must match {projectName}@{version}, got: $TAG" >&2
+              exit 1
+              ;;
+          esac
+          {
+            echo "tag=$TAG"
+            echo "project=${TAG%@*}"
+            echo "version=${TAG##*@}"
+          } >> "$GITHUB_OUTPUT"
+      - uses: jdx/mise-action@5228313ee0372e111a38da051671ca30fc5a96db # v3.6.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: pnpm install
+      - name: Verify project
+        run: pnpm nx show projects | grep -Fxq '${{ steps.resolve.outputs.project }}'
+      - name: Build
+        run: pnpm nx run '${{ steps.resolve.outputs.project }}':build
+      - name: Pack
+        id: pack
+        run: |
+          ROOT="$(pnpm nx show project '${{ steps.resolve.outputs.project }}' --json | jq -r '.root')"
+          echo "root=$ROOT" >> "$GITHUB_OUTPUT"
+          FILENAME="$(cd "$ROOT" && pnpm pack 2>/dev/null | tail -n 1)"
+          TARBALL="$ROOT/$FILENAME"
+          [ -f "$TARBALL" ] || { echo 'pnpm pack produced no tarball' >&2; exit 1; }
+          echo "tarball=$TARBALL" >> "$GITHUB_OUTPUT"
+      - name: Configure npm auth
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          printf '%s\n' '@jonathanmorley:registry=https://npm.pkg.github.com' '//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}' > "$HOME/.npmrc"
+      - name: Publish to GitHub Packages
+        if: env.DRY_RUN != 'true'
+        run: pnpm nx release publish --projects='${{ steps.resolve.outputs.project }}' --registry=https://npm.pkg.github.com
+      - name: Dry-run publish
+        if: env.DRY_RUN == 'true'
+        run: pnpm nx release publish --projects='${{ steps.resolve.outputs.project }}' --registry=https://npm.pkg.github.com --dry-run
+      - name: Generate SBOM
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0
+        with:
+          path: ${{ steps.pack.outputs.root }}
+          format: spdx-json
+          output-file: ${{ runner.temp }}/sbom.spdx.json
+      - name: Create GitHub Release
+        if: env.DRY_RUN != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG='${{ steps.resolve.outputs.tag }}'
+          VERSION='${{ steps.resolve.outputs.version }}'
+          NOTES="$(awk -v version="$VERSION" '
+            /^## / { if (found) exit; found = ($2 == version || $2 == "v" version); next }
+            found { print }
+          ' '${{ steps.pack.outputs.root }}/CHANGELOG.md')"
+          [ -n "$NOTES" ] || { echo "No CHANGELOG section for $VERSION" >&2; exit 1; }
+          printf '%s\n' "$NOTES" > "$RUNNER_TEMP/notes.md"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" --clobber '${{ steps.pack.outputs.tarball }}' '${{ runner.temp }}/sbom.spdx.json'
+          else
+            gh release create "$TAG" --title "$TAG" --notes-file "$RUNNER_TEMP/notes.md" '${{ steps.pack.outputs.tarball }}' '${{ runner.temp }}/sbom.spdx.json'
+          fi
+      - name: Attest artifacts
+        if: env.DRY_RUN != 'true'
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2
+        with:
+          subject-path: |
+            ${{ steps.pack.outputs.tarball }}
+            ${{ runner.temp }}/sbom.spdx.json

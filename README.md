@@ -40,12 +40,14 @@ Target defaults live in `nx.json`. Per-package `nx.targets` entries inherit them
 - CodeQL: active workflow (default setup, no local config file).
 - Branch protection (`Default branch protection` ruleset): linear history, signed commits, PR with resolved threads, squash/rebase merges only. Auto-merge allowed, merge queue not configured.
 
-## Release roadmap
+## Release
 
-No release workflow yet. Planned:
+Version with `nx release` locally (independent versions, `{projectName}@{version}` tags, per-project changelogs — see `nx.json`), push the tags, and `release.yaml` publishes to GitHub Packages plus a GitHub Release carrying the `npm pack` tarball, an SPDX SBOM, and SLSA attestation. Supply-chain provenance comes from `attest-build-provenance` on the release assets rather than `npm --provenance`, whose support on GitHub Packages is uncertain. Full maintainer flow lives in [CONTRIBUTING.md](./CONTRIBUTING.md).
 
-1. [#176](https://github.com/jonathanmorley/gha-testing/issues/176) Repo hygiene (this slice).
-2. [#177](https://github.com/jonathanmorley/gha-testing/issues/177) Release pipeline: `nx release` to GitHub Packages + GitHub Releases with provenance/SBOM.
+## Roadmap
+
+1. [#176](https://github.com/jonathanmorley/gha-testing/issues/176) Repo hygiene (done).
+2. [#177](https://github.com/jonathanmorley/gha-testing/issues/177) Release pipeline (done — this slice).
 3. [#178](https://github.com/jonathanmorley/gha-testing/issues/178) Hermetic release smoke tests (no network).
 4. [#179](https://github.com/jonathanmorley/gha-testing/issues/179) Live GitHub E2E targeting `jonathanmorley/gh-testbed` namespaces (private churn-friendly repo with `alloc` + tag-ref mutex helpers and nightly `it-*` cleanup).
 5. [#180](https://github.com/jonathanmorley/gha-testing/issues/180) Polyglot proof (Python + Rust) and Nx-vs-Bazel writeup.

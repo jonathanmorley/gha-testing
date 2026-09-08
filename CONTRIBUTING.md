@@ -30,6 +30,19 @@ pnpm nx affected --target=integration-test
 - TypeScript: project references via `tsc -b`; packages extend the root `tsconfig.json` (`@tsconfig/node22`).
 - Keep coverage high; prefer exercising behavior (pack/install/run) over asserting file contents.
 
+## Release (maintainers)
+
+Versions are independent per package. The flow is split: `nx release` versions locally, `release.yaml` publishes on tag push.
+
+```bash
+mise x -- pnpm nx release version patch --projects=@jonathanmorley/typescript-library
+git push origin main '@jonathanmorley/typescript-library@*'
+```
+
+`nx release version` bumps the manifest, updates the lockfile, writes the changelog, and commits + tags (no push — see the `release` block in `nx.json`). Bumping the library also bumps the application, since it depends on the library. Pushing a `{projectName}@{version}` tag triggers `release.yaml`, which builds, publishes to GitHub Packages, and creates a GitHub Release with the packed tarball, an SPDX SBOM, and SLSA attestation. Republish of an existing version fails by design; cut a new version instead.
+
+Validate without mutating anything via `workflow_dispatch` with `dry_run: true` on an existing tag.
+
 ## Pull requests
 
 - Keep PRs small and focused on a single concern.
