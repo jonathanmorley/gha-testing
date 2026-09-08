@@ -1,0 +1,16 @@
+{
+  "name": "@jonathanmorley/release-smoke",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Hermetic release smoke tests. Never published; exercises pack, install, run, and nx release dry-runs.",
+  "nx": {
+    "targets": {
+      "build": {},
+      "lint": {},
+      "unit-test": {},
+      "integration-test": {},
+      "test": {}
+    }
+  }
+}
