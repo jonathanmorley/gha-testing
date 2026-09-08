@@ -1,6 +1,6 @@
 # typescript-application
 
-Runnable TypeScript app depending on `@jonathanmorley/typescript-library` (`workspace:*`). Prints `hello('World')`.
+Runnable TypeScript app depending on `@jonathanmorley/typescript-library` (`workspace:*`). Prints `hello('World')`. Published to GitHub Packages alongside the library on every release (same install setup as the library).
 
 ## Run
 
