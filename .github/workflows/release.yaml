@@ -45,6 +45,11 @@ jobs:
           else
             TAG="$GITHUB_REF_NAME"
           fi
+          # Strip an it-* live-E2E namespace prefix (tags look like
+          # it-<ns>/<project>@<version>); bare release tags are unaffected.
+          case "$TAG" in
+            it-*/*) TAG="${TAG#*/}" ;;
+          esac
           case "$TAG" in
             *@*) ;;
             *)
