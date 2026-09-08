@@ -1,0 +1,38 @@
+{
+  "name": "@jonathanmorley/release-e2e",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Live release E2E against ephemeral testbed repos. Runs only via e2e-release.yaml, never on PRs.",
+  "nx": {
+    "targets": {
+      "build": {},
+      "lint": {},
+      "unit-test": {},
+      "integration-test": {},
+      "test": {},
+      "live-e2e": {
+        "executor": "nx:run-commands",
+        "dependsOn": [
+          "build"
+        ],
+        "inputs": [
+          "root",
+          "{projectRoot}/.oxlintrc.json",
+          "{projectRoot}/package.json",
+          "{projectRoot}/src/**/*.ts",
+          "{projectRoot}/tests/**/*.ts",
+          "{workspaceRoot}/.oxlintrc.json"
+        ],
+        "options": {
+          "cwd": "{projectRoot}",
+          "command": "vitest",
+          "args": [
+            "--dir=tests/live",
+            "--passWithNoTests"
+          ]
+        }
+      }
+    }
+  }
+}

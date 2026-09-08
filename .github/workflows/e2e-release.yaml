@@ -1,0 +1,39 @@
+name: e2e-release
+
+# Live release E2E: runs the release-e2e suite, which publishes a real
+# release from namespaced refs in the gh-testbed repo and installs it
+# back. Never runs on PRs or pushes; self-cleaning (deletes its release,
+# refs, and package versions).
+#
+# Authentication uses Octo STS, not a stored PAT: the job mints a
+# short-lived token scoped to the testbed repo (trust policy versioned
+# there at .github/chainguard/gha-testing-e2e.sts.yaml).
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: '0 3 * * 1'
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  live-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+      - name: Mint testbed token via Octo STS
+        id: sts
+        uses: octo-sts/action@f603d3be9d8dd9871a265776e625a27b00effe05 # v1.1.1
+        with:
+          scope: jonathanmorley/gh-testbed
+          identity: gha-testing-e2e
+      - uses: jdx/mise-action@5228313ee0372e111a38da051671ca30fc5a96db # v3.6.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: pnpm install
+      - name: Live release E2E
+        run: pnpm nx run @jonathanmorley/release-e2e:live-e2e
+        env:
+          GH_TOKEN: ${{ steps.sts.outputs.token }}
