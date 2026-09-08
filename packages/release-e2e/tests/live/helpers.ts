@@ -45,6 +45,18 @@ export function run(command: string, args: string[], cwd: string, timeout = 120_
   try {
     return execFileSync(command, args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout });
   } catch (error) {
+    // Scrub the failure in place before attaching it as the cause: vitest
+    // prints the cause chain verbatim (message plus stdout/stderr/output),
+    // and argv can carry the base64 Basic credential.
+    if (error instanceof Error) {
+      error.message = sanitize(error.message);
+      const exec = error as Error & { output?: unknown; stderr?: unknown; stdout?: unknown };
+      if (typeof exec.stdout === 'string') exec.stdout = sanitize(exec.stdout);
+      if (typeof exec.stderr === 'string') exec.stderr = sanitize(exec.stderr);
+      if (Array.isArray(exec.output)) {
+        exec.output = exec.output.map(part => (typeof part === 'string' ? sanitize(part) : part));
+      }
+    }
     throw new Error(sanitize(error instanceof Error ? error.message : String(error)), { cause: error });
   }
 }
