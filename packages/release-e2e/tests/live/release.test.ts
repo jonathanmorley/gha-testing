@@ -131,10 +131,21 @@ async function cleanup(
   installDir: string,
   pat: string
 ): Promise<void> {
+  let released = true;
   try {
     gh(['release', 'delete', tag, '--repo', `${OWNER}/${TESTBED}`, '--cleanup-tag', '--yes'], workspaceRoot);
   } catch (error) {
+    released = false;
     info(`Cleanup warning: ${error instanceof Error ? error.message : String(error)}`);
+  }
+  // The tag outlives a missing release (--cleanup-tag only applies when the
+  // release exists), so delete the ref explicitly to stay self-cleaning.
+  if (!released) {
+    try {
+      gh(['api', `repos/${OWNER}/${TESTBED}/git/refs/tags/${tag}`, '--method', 'DELETE'], workspaceRoot);
+    } catch (error) {
+      info(`Cleanup warning: ${error instanceof Error ? error.message : String(error)}`);
+    }
   }
   try {
     gh(['api', `repos/${OWNER}/${TESTBED}/git/refs/heads/${branch}`, '--method', 'DELETE'], workspaceRoot);

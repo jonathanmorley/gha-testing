@@ -85,7 +85,10 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          printf '%s\n' '@jonathanmorley:registry=https://npm.pkg.github.com' '//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}' > "$HOME/.npmrc"
+          # Double quotes: bake the token into the file now. Single quotes
+          # would leave a ${NODE_AUTH_TOKEN} placeholder that later steps
+          # cannot expand, failing closed as an unauthenticated 401.
+          printf '%s\n' '@jonathanmorley:registry=https://npm.pkg.github.com' "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" > "$HOME/.npmrc"
       - name: Publish to GitHub Packages
         if: env.DRY_RUN != 'true'
         run: pnpm nx release publish --projects='${{ steps.resolve.outputs.project }}' --registry=https://npm.pkg.github.com
