@@ -48,11 +48,14 @@ jobs:
             TAG="$GITHUB_REF_NAME"
           fi
           # Strip an it-* live-E2E namespace prefix (tags look like
-          # it-<ns>/<project>@<version>); bare release tags are unaffected.
-          case "$TAG" in
-            it-*/*) TAG="${TAG#*/}" ;;
+          # it-<ns>/<project>@<version>) for project/version resolution
+          # only. TAG itself stays intact so the GitHub Release is cut on
+          # the pushed ref; bare release tags are unaffected either way.
+          STRIPPED="$TAG"
+          case "$STRIPPED" in
+            it-*/*) STRIPPED="${STRIPPED#*/}" ;;
           esac
-          case "$TAG" in
+          case "$STRIPPED" in
             *@*) ;;
             *)
               echo "Tag must match {projectName}@{version}, got: $TAG" >&2
@@ -61,8 +64,8 @@ jobs:
           esac
           {
             echo "tag=$TAG"
-            echo "project=${TAG%@*}"
-            echo "version=${TAG##*@}"
+            echo "project=${STRIPPED%@*}"
+            echo "version=${STRIPPED##*@}"
           } >> "$GITHUB_OUTPUT"
       - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
         env:
@@ -126,3 +129,7 @@ jobs:
           subject-path: |
             ${{ steps.pack.outputs.tarball }}
             ${{ runner.temp }}/sbom.spdx.json
+          # Fixture versions rehearse in private repos, where attestation
+          # storage is unavailable. Signing still runs; the storage write
+          # is proven by the first real (public-repo) release.
+          create-storage-record: ${{ !contains(steps.resolve.outputs.version, '-e2e') }}
