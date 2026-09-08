@@ -32,7 +32,7 @@ importers:
 
   packages/typescript-application:
     dependencies:
-      typescript-library:
+      '@jonathanmorley/typescript-library':
         specifier: workspace:*
         version: link:../typescript-library
 

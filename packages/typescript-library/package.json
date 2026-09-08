@@ -1,8 +1,14 @@
 {
-  "name": "typescript-library",
+  "name": "@jonathanmorley/typescript-library",
   "version": "1.0.0",
   "type": "module",
   "main": "dist/src/index.js",
+  "files": [
+    "dist/src"
+  ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "nx": {
     "targets": {
       "build": {},
