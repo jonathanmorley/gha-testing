@@ -11,9 +11,9 @@ importers:
       '@nx/js':
         specifier: 22.7.11
         version: 22.7.11(@babel/traverse@7.29.8(supports-color@7.2.0))(nx@22.7.11)(supports-color@7.2.0)
-      '@tsconfig/node22':
-        specifier: 22.0.6
-        version: 22.0.6
+      '@tsconfig/node24':
+        specifier: 24.0.0
+        version: 24.0.0
       '@types/node':
         specifier: 26.5.1
         version: 26.5.1
@@ -978,8 +978,8 @@ packages:
   '@rolldown/pluginutils@1.0.1':
     resolution: {integrity: sha512-2j9bGt5Jh8hj+vPtgzPtl72j0yRxHAyumoo6TNfAjsLB04UtpSvPbPcDcBMxz7n+9CYB0c1GxQFxYRg2jimqGw==}
 
-  '@tsconfig/node22@22.0.6':
-    resolution: {integrity: sha512-/5thavHAnWDZwH2H6eEn/T8pBEBhtuKaWGMslsj82kJfvzQgOgEMK7X4goBbIUjgVtAzPTtM9Ml64LA0uxO6Iw==}
+  '@tsconfig/node24@24.0.0':
+    resolution: {integrity: sha512-3/6Cr4dELEAucgPIr6ufY7yBYMi4ttZFOewABADNZ+bm4DUZl4dup2VBcBeP1ejj3QblrWVWux/1XcRv/ZVikA==}
 
   '@tybys/wasm-util@0.9.0':
     resolution: {integrity: sha512-6+7nlbMVX/PVDCwaIQ8nTOPveOcFLSt8GcXdx8hD0bt39uWxYT88uXzqTd4fTvqta7oeUJqudepapKNt2DYJFw==}
@@ -2933,7 +2933,7 @@ snapshots:
 
   '@rolldown/pluginutils@1.0.1': {}
 
-  '@tsconfig/node22@22.0.6': {}
+  '@tsconfig/node24@24.0.0': {}
 
   '@tybys/wasm-util@0.9.0':
     dependencies:
