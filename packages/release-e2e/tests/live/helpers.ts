@@ -128,16 +128,24 @@ export async function githubApi(path: string, method = 'GET'): Promise<unknown> 
   return (await response.json()) as unknown;
 }
 
-export async function deletePackageVersion(project: string, version: string): Promise<void> {
+export async function deletePackageVersion(project: string, version: string, installDir: string): Promise<void> {
   // Literal @ with encoded slash, mirroring npm registry URLs
   // (@scope%2Fname). encodeURIComponent over-encodes the @ and 404s.
   const [scope, name] = project.split('/');
   const path = `${scope}%2F${name}`;
-  const versions = (await githubApi(`/users/${OWNER}/packages/npm/${path}/versions?per_page=100`)) as {
-    id: number;
-    name: string;
-  }[];
-  const match = versions.find(candidate => candidate.name === version);
-  if (!match) return;
-  await githubApi(`/users/${OWNER}/packages/npm/${path}/versions/${match.id}`, 'DELETE');
+  try {
+    const versions = (await githubApi(`/users/${OWNER}/packages/npm/${path}/versions?per_page=100`)) as {
+      id: number;
+      name: string;
+    }[];
+    const match = versions.find(candidate => candidate.name === version);
+    if (!match) return;
+    await githubApi(`/users/${OWNER}/packages/npm/${path}/versions/${match.id}`, 'DELETE');
+    info(`Deleted ${project}@${version} via REST versions API.`);
+  } catch (error) {
+    info(`REST version delete failed, trying npm unpublish: ${error instanceof Error ? error.message : String(error)}`);
+  }
+  // Fallback: the registry protocol maps unpublish onto version deletion.
+  run('npm', ['unpublish', `${project}@${version}`, '--registry=https://npm.pkg.github.com'], installDir);
+  info(`Deleted ${project}@${version} via npm unpublish.`);
 }

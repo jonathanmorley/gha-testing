@@ -208,7 +208,7 @@ async function cleanup(
   await Promise.all(
     [LIB, APP].map(async project => {
       try {
-        await deletePackageVersion(project, version);
+        await deletePackageVersion(project, version, installDir);
       } catch (error) {
         info(`Cleanup warning: ${error instanceof Error ? error.message : String(error)}`);
       }
