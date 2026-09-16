@@ -99,9 +99,10 @@ async function pollRelease(tag: string): Promise<void> {
   }
 }
 
-// A release existing is not enough: the workflow run that produced it must
-// have concluded success, otherwise later failures (SBOM, attestation)
-// pass silently. Fails fast on any other conclusion.
+// A release existing is not enough: the release workflow run that produced
+// it must have concluded success, otherwise late failures pass silently.
+// Scoped to the release workflow: the tag push also triggers pull.yaml,
+// whose testbed failure (actions:read on the default token) is unrelated.
 async function expectReleaseRunGreen(tag: string): Promise<void> {
   for (let attempt = 1; attempt <= 30; attempt++) {
     const runs = JSON.parse(
@@ -111,6 +112,8 @@ async function expectReleaseRunGreen(tag: string): Promise<void> {
           'list',
           '--repo',
           `${OWNER}/${TESTBED}`,
+          '--workflow',
+          'release.yaml',
           '--limit',
           '20',
           '--json',
