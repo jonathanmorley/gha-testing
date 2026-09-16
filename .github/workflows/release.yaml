@@ -123,13 +123,12 @@ jobs:
             gh release create "$TAG" --title "$TAG" --notes-file "$RUNNER_TEMP/notes.md" '${{ steps.pack.outputs.tarball }}' '${{ runner.temp }}/sbom.spdx.json'
           fi
       - name: Attest artifacts
-        if: env.DRY_RUN != 'true'
+        # Fixture versions rehearse in private repos, where attestation
+        # storage is unavailable, so the step is skipped for them. Real
+        # releases always attest.
+        if: env.DRY_RUN != 'true' && !contains(steps.resolve.outputs.version, '-e2e')
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
           subject-path: |
             ${{ steps.pack.outputs.tarball }}
             ${{ runner.temp }}/sbom.spdx.json
-          # Fixture versions rehearse in private repos, where attestation
-          # storage is unavailable. Signing still runs; the storage write
-          # is proven by the first real (public-repo) release.
-          create-storage-record: ${{ !contains(steps.resolve.outputs.version, '-e2e') }}
