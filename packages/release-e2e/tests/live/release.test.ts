@@ -12,6 +12,7 @@ import {
   gh,
   gitAuthArgs,
   info,
+  normalizeVersion,
   packagesToken,
   poll,
   remove,
@@ -150,7 +151,7 @@ async function pollRegistry(version: string, installDir: string): Promise<void> 
   for (let attempt = 1; attempt <= 30; attempt++) {
     try {
       const found = run('npm', ['view', `${LIB}@${version}`, 'version'], installDir);
-      if (found.trim() === version) return;
+      if (normalizeVersion(found.trim()) === normalizeVersion(version)) return;
       last = `unexpected output: ${JSON.stringify(found.trim())}`;
     } catch (error) {
       last = error instanceof Error ? error.message : String(error);
