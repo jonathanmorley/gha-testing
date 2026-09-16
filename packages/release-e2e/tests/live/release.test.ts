@@ -40,6 +40,7 @@ it('should publish and install a full release from the testbed repo', { timeout:
     stageTree(stage, version, sha);
     pushTree(stage, branch, tag, pat);
     await pollRelease(tag);
+    await expectReleaseRunGreen(tag);
     await pollRegistry(version, installDir, pat);
     const { appOutput, greeting } = await installAndRun(version, installDir);
     expect(greeting).toBe('Hello Live!');
@@ -96,6 +97,41 @@ async function pollRelease(tag: string): Promise<void> {
       cause: error
     });
   }
+}
+
+// A release existing is not enough: the workflow run that produced it must
+// have concluded success, otherwise later failures (SBOM, attestation)
+// pass silently. Fails fast on any other conclusion.
+async function expectReleaseRunGreen(tag: string): Promise<void> {
+  for (let attempt = 1; attempt <= 30; attempt++) {
+    const runs = JSON.parse(
+      gh(
+        [
+          'run',
+          'list',
+          '--repo',
+          `${OWNER}/${TESTBED}`,
+          '--limit',
+          '20',
+          '--json',
+          'databaseId,headBranch,status,conclusion'
+        ],
+        workspaceRoot
+      )
+    ) as { conclusion: string | null; databaseId: number; headBranch: string; status: string }[];
+    const match = runs.find(candidate => candidate.headBranch === tag);
+    if (match?.status === 'completed') {
+      if (match.conclusion !== 'success') {
+        throw new Error(
+          `Release run for ${tag} concluded ${match.conclusion ?? 'unknown'}: https://github.com/${OWNER}/${TESTBED}/actions/runs/${match.databaseId}`
+        );
+      }
+      return;
+    }
+    // eslint-disable-next-line no-await-in-loop -- polling is inherently sequential.
+    await new Promise(done => setTimeout(done, 20_000));
+  }
+  throw new Error(`Timed out waiting for a completed release run for ${tag}`);
 }
 
 async function pollRegistry(version: string, installDir: string, pat: string): Promise<void> {
