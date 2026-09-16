@@ -32,16 +32,18 @@ it('should publish and install a full release from the testbed repo', { timeout:
   const namespace = `it-${stamp}-${rand}`;
   const version = `0.0.0-e2e.${stamp}.${rand.slice(0, 4)}`;
   const branch = `${namespace}/patch`;
-  const tag = `${namespace}/${LIB}@${version}`;
-  info(`E2E from ${sha}: testbed refs ${branch} and ${tag}`);
+  // Independent versioning publishes one project per tag, so a full
+  // release needs both tags (each triggers its own release run).
+  const tags = [LIB, APP].map(project => `${namespace}/${project}@${version}`);
+  info(`E2E from ${sha}: testbed branch ${branch} and tags ${tags.join(', ')}`);
 
   const stage = tempDir('release-e2e-stage');
   const installDir = tempDir('release-e2e-install');
   try {
     stageTree(stage, version, sha);
-    pushTree(stage, branch, tag, pat);
-    await pollRelease(tag);
-    await expectReleaseRunGreen(tag);
+    pushTree(stage, branch, tags, pat);
+    await Promise.all(tags.map(tag => pollRelease(tag)));
+    await Promise.all(tags.map(tag => expectReleaseRunGreen(tag)));
     await pollRegistry(version, installDir);
     const { appOutput, greeting } = await installAndRun(version, installDir);
     expect(greeting).toBe('Hello Live!');
@@ -49,7 +51,7 @@ it('should publish and install a full release from the testbed repo', { timeout:
     expect(run('git', ['tag', '--list', '*-e2e*'], workspaceRoot).trim()).toBe('');
     expect(run('git', ['ls-remote', 'origin', 'refs/tags/*-e2e*'], workspaceRoot).trim()).toBe('');
   } finally {
-    await cleanup(namespace, branch, tag, version, stage, installDir);
+    await cleanup(namespace, branch, tags, version, stage, installDir);
   }
 });
 
@@ -79,11 +81,10 @@ function testbedUrl(): string {
   return `https://github.com/${OWNER}/${TESTBED}.git`;
 }
 
-function pushTree(stage: string, branch: string, tag: string, pat: string): void {
+function pushTree(stage: string, branch: string, tags: string[], pat: string): void {
   const auth = gitAuthArgs(pat);
-  run('git', [...auth, 'push', testbedUrl(), `main:${branch}`], stage);
-  run('git', [...auth, 'tag', tag], stage);
-  run('git', [...auth, 'push', testbedUrl(), tag], stage);
+  for (const tag of tags) run('git', [...auth, 'tag', tag], stage);
+  run('git', [...auth, 'push', testbedUrl(), `main:${branch}`, ...tags], stage);
 }
 
 async function pollRelease(tag: string): Promise<void> {
@@ -176,25 +177,27 @@ async function installAndRun(version: string, installDir: string): Promise<{ app
 async function cleanup(
   namespace: string,
   branch: string,
-  tag: string,
+  tags: string[],
   version: string,
   stage: string,
   installDir: string
 ): Promise<void> {
-  let released = true;
-  try {
-    gh(['release', 'delete', tag, '--repo', `${OWNER}/${TESTBED}`, '--cleanup-tag', '--yes'], workspaceRoot);
-  } catch (error) {
-    released = false;
-    info(`Cleanup warning: ${error instanceof Error ? error.message : String(error)}`);
-  }
-  // The tag outlives a missing release (--cleanup-tag only applies when the
-  // release exists), so delete the ref explicitly to stay self-cleaning.
-  if (!released) {
+  for (const tag of tags) {
+    let released = true;
     try {
-      gh(['api', `repos/${OWNER}/${TESTBED}/git/refs/tags/${tag}`, '--method', 'DELETE'], workspaceRoot);
+      gh(['release', 'delete', tag, '--repo', `${OWNER}/${TESTBED}`, '--cleanup-tag', '--yes'], workspaceRoot);
     } catch (error) {
+      released = false;
       info(`Cleanup warning: ${error instanceof Error ? error.message : String(error)}`);
+    }
+    // The tag outlives a missing release (--cleanup-tag only applies when the
+    // release exists), so delete the ref explicitly to stay self-cleaning.
+    if (!released) {
+      try {
+        gh(['api', `repos/${OWNER}/${TESTBED}/git/refs/tags/${tag}`, '--method', 'DELETE'], workspaceRoot);
+      } catch (error) {
+        info(`Cleanup warning: ${error instanceof Error ? error.message : String(error)}`);
+      }
     }
   }
   try {

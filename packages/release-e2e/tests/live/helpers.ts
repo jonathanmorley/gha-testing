@@ -129,12 +129,15 @@ export async function githubApi(path: string, method = 'GET'): Promise<unknown> 
 }
 
 export async function deletePackageVersion(project: string, version: string): Promise<void> {
-  const name = encodeURIComponent(project);
-  const versions = (await githubApi(`/users/${OWNER}/packages/npm/${name}/versions?per_page=100`)) as {
+  // Literal @ with encoded slash, mirroring npm registry URLs
+  // (@scope%2Fname). encodeURIComponent over-encodes the @ and 404s.
+  const [scope, name] = project.split('/');
+  const path = `${scope}%2F${name}`;
+  const versions = (await githubApi(`/users/${OWNER}/packages/npm/${path}/versions?per_page=100`)) as {
     id: number;
     name: string;
   }[];
   const match = versions.find(candidate => candidate.name === version);
   if (!match) return;
-  await githubApi(`/users/${OWNER}/packages/npm/${name}/versions/${match.id}`, 'DELETE');
+  await githubApi(`/users/${OWNER}/packages/npm/${path}/versions/${match.id}`, 'DELETE');
 }
