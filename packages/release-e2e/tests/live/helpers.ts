@@ -35,13 +35,13 @@ export function token(): string {
 // Package registry reads and version deletions go through a classic PAT.
 // The package REST management endpoints only honor PATs (and OAuth user
 // tokens): installation tokens such as the octo-sts minted token get 404s
-// even with packages:write. Git, release, and Actions API calls above
-// keep using the short-lived token.
+// even with packages:write. npm unpublish additionally requires the write
+// scope, so the PAT needs read, write, and delete.
 export function packagesToken(): string {
   const value = process.env.PACKAGES_TOKEN;
   if (!value) {
     throw new Error(
-      'Missing PACKAGES_TOKEN: in CI add the TESTBED_PACKAGES_TOKEN secret (classic PAT with read:packages and delete:packages scopes); locally export one.'
+      'Missing PACKAGES_TOKEN: in CI add the TESTBED_PACKAGES_TOKEN secret (classic PAT with read:packages, write:packages, and delete:packages scopes); locally export one.'
     );
   }
   return value;
