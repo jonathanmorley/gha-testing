@@ -48,7 +48,7 @@ it('should publish and install a full release from the testbed repo', { timeout:
     expect(run('git', ['tag', '--list', '*-e2e*'], workspaceRoot).trim()).toBe('');
     expect(run('git', ['ls-remote', 'origin', 'refs/tags/*-e2e*'], workspaceRoot).trim()).toBe('');
   } finally {
-    await cleanup(namespace, branch, tag, version, stage, installDir, pat);
+    await cleanup(namespace, branch, tag, version, stage, installDir);
   }
 });
 
@@ -164,8 +164,7 @@ async function cleanup(
   tag: string,
   version: string,
   stage: string,
-  installDir: string,
-  pat: string
+  installDir: string
 ): Promise<void> {
   let released = true;
   try {
@@ -199,16 +198,23 @@ async function cleanup(
   );
   remove(stage);
   remove(installDir);
-  try {
-    const refs = run(
-      'git',
-      [...gitAuthArgs(pat), 'ls-remote', testbedUrl(), `refs/heads/${namespace}/*`, `refs/tags/${namespace}/*`],
-      workspaceRoot
-    );
-    if (refs.trim() !== '') {
-      info(`Cleanup warning: leftover testbed refs for ${namespace} (nightly cleanup sweeps it-* refs):\n${refs}`);
+  warnTestbedClean(namespace);
+}
+
+// The git ls-remote path proved flaky with installation tokens, so verify
+// via the REST matching-refs API that the gh CLI path already uses.
+function warnTestbedClean(namespace: string): void {
+  for (const kind of ['heads', 'tags']) {
+    try {
+      const count = gh(
+        ['api', `repos/${OWNER}/${TESTBED}/git/matching-refs/${kind}/${namespace}/`, '--jq', 'length'],
+        workspaceRoot
+      );
+      if (count.trim() !== '0') {
+        info(`Cleanup warning: leftover testbed ${kind} refs under ${namespace}/ (nightly cleanup sweeps it-* refs).`);
+      }
+    } catch (error) {
+      info(`Cleanup warning: could not verify testbed refs: ${error instanceof Error ? error.message : String(error)}`);
     }
-  } catch (error) {
-    info(`Cleanup warning: could not verify testbed refs: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
