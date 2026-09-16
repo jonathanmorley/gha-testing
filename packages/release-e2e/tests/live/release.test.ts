@@ -142,10 +142,21 @@ async function pollRegistry(version: string, installDir: string, pat: string): P
     join(installDir, '.npmrc'),
     `@jonathanmorley:registry=https://npm.pkg.github.com\n//npm.pkg.github.com/:_authToken=${pat}\n`
   );
-  await poll(`GitHub Packages ${LIB}@${version}`, 30, 20_000, () => {
-    const found = run('npm', ['view', `${LIB}@${version}`, 'version'], installDir);
-    return found.trim() === version;
-  });
+  // Dedicated loop instead of poll() so the timeout error carries the last
+  // npm failure (401 vs 404 distinguishes auth from visibility problems).
+  let last = 'no attempts made';
+  for (let attempt = 1; attempt <= 30; attempt++) {
+    try {
+      const found = run('npm', ['view', `${LIB}@${version}`, 'version'], installDir);
+      if (found.trim() === version) return;
+      last = `unexpected output: ${JSON.stringify(found.trim())}`;
+    } catch (error) {
+      last = error instanceof Error ? error.message : String(error);
+    }
+    // eslint-disable-next-line no-await-in-loop -- polling is inherently sequential.
+    await new Promise(done => setTimeout(done, 20_000));
+  }
+  throw new Error(`Timed out waiting for GitHub Packages ${LIB}@${version}. Last npm failure: ${last}`);
 }
 
 async function installAndRun(version: string, installDir: string): Promise<{ appOutput: string; greeting: string }> {
