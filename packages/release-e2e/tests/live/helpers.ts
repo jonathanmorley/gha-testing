@@ -96,6 +96,15 @@ export function remove(path: string): void {
   rmSync(path, { force: true, recursive: true });
 }
 
+// Registries normalize purely-numeric prerelease identifiers, stripping
+// leading zeros (0202 becomes 202), so compare against the normalized form.
+export function normalizeVersion(version: string): string {
+  return version
+    .split('.')
+    .map(part => (/^\d+$/.test(part) ? String(Number(part)) : part))
+    .join('.');
+}
+
 export async function poll(
   description: string,
   attempts: number,
