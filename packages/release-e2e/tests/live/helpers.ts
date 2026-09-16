@@ -32,6 +32,21 @@ export function token(): string {
   return value;
 }
 
+// Package registry reads and version deletions go through a classic PAT.
+// The package REST management endpoints only honor PATs (and OAuth user
+// tokens): installation tokens such as the octo-sts minted token get 404s
+// even with packages:write. Git, release, and Actions API calls above
+// keep using the short-lived token.
+export function packagesToken(): string {
+  const value = process.env.PACKAGES_TOKEN;
+  if (!value) {
+    throw new Error(
+      'Missing PACKAGES_TOKEN: in CI add the TESTBED_PACKAGES_TOKEN secret (classic PAT with read:packages and delete:packages scopes); locally export one.'
+    );
+  }
+  return value;
+}
+
 export function sanitize(message: string): string {
   const secret = currentToken();
   if (!secret) return message;
@@ -103,7 +118,7 @@ export async function githubApi(path: string, method = 'GET'): Promise<unknown> 
   const response = await fetch(`https://api.github.com${path}`, {
     headers: {
       Accept: 'application/vnd.github+json',
-      Authorization: `Bearer ${token()}`,
+      Authorization: `Bearer ${packagesToken()}`,
       'X-GitHub-Api-Version': '2022-11-28'
     },
     method

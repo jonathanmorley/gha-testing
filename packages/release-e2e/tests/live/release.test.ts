@@ -12,6 +12,7 @@ import {
   gh,
   gitAuthArgs,
   info,
+  packagesToken,
   poll,
   remove,
   run,
@@ -41,7 +42,7 @@ it('should publish and install a full release from the testbed repo', { timeout:
     pushTree(stage, branch, tag, pat);
     await pollRelease(tag);
     await expectReleaseRunGreen(tag);
-    await pollRegistry(version, installDir, pat);
+    await pollRegistry(version, installDir);
     const { appOutput, greeting } = await installAndRun(version, installDir);
     expect(greeting).toBe('Hello Live!');
     expect(appOutput).toBe('Hello World!');
@@ -137,10 +138,10 @@ async function expectReleaseRunGreen(tag: string): Promise<void> {
   throw new Error(`Timed out waiting for a completed release run for ${tag}`);
 }
 
-async function pollRegistry(version: string, installDir: string, pat: string): Promise<void> {
+async function pollRegistry(version: string, installDir: string): Promise<void> {
   writeFileSync(
     join(installDir, '.npmrc'),
-    `@jonathanmorley:registry=https://npm.pkg.github.com\n//npm.pkg.github.com/:_authToken=${pat}\n`
+    `@jonathanmorley:registry=https://npm.pkg.github.com\n//npm.pkg.github.com/:_authToken=${packagesToken()}\n`
   );
   // Dedicated loop instead of poll() so the timeout error carries the last
   // npm failure (401 vs 404 distinguishes auth from visibility problems).

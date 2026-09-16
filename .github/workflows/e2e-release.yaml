@@ -37,3 +37,6 @@ jobs:
         run: pnpm nx run @jonathanmorley/release-e2e:live-e2e
         env:
           GH_TOKEN: ${{ steps.sts.outputs.token }}
+          # Classic PAT: package registry reads and version deletions only
+          # honor PATs, so this one secret survives the octo-sts direction.
+          PACKAGES_TOKEN: ${{ secrets.TESTBED_PACKAGES_TOKEN }}
