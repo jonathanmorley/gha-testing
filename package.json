@@ -1,11 +1,11 @@
 {
   "name": "gha-testing",
   "devDependencies": {
-    "@nx/js": "22.7.12",
+    "@nx/js": "23.3.0",
     "@tsconfig/node22": "22.0.6",
     "@types/node": "26.6.4",
     "dprint": "0.51.1",
-    "nx": "22.7.12",
+    "nx": "23.3.0",
     "oxlint": "1.87.0",
     "typescript": "5.9.3",
     "vitest": "5.0.3"
